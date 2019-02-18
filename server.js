@@ -56,16 +56,16 @@ app.post("/register", (req, res) => {
 
 app.get("/profile/:id", (req, res) => {
   const { id } = req.params;
-  let found = false;
-  db.users.forEach(user => {
-    if (user.id === id) {
-      found = true;
-      return res.json(user);
-    }
-  });
-  if (!found) {
-    res.status(400).json("user not found");
-  }
+  db.select('*').from('users').where({id}) // the property and the value are the same 
+  // so you dont need to do id: id
+    .then(user => {
+      if (user.length) {
+        res.json(user[0])
+      } else {
+        res.status(400).json('User Not Found')
+      }
+    })
+    .catch(err => res.status(400).json('error getting user'))
 });
 
 app.put("/image", (req, res) => {
